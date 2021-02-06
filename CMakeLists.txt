@@ -37,7 +37,7 @@ option(HB_HAVE_FREETYPE "Enable freetype interop helpers" OFF)
 option(HB_HAVE_GRAPHITE2 "Enable Graphite2 complementary shaper" OFF)
 option(HB_HAVE_GLIB "Enable glib unicode functions" OFF)
 option(HB_HAVE_ICU "Enable icu unicode functions" OFF)
-if (TARGET Freetype::Freetype)
+if (TARGET freetype)
   set (HB_HAVE_FREETYPE ON)
 endif ()
 if (APPLE)
@@ -448,8 +448,8 @@ target_include_directories(harfbuzz PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/harfbuzz>")
 target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
-if (HB_HAVE_FREETYPE AND TARGET Freetype::Freetype)
-  target_link_libraries(harfbuzz PUBLIC Freetype::Freetype)
+if (HB_HAVE_FREETYPE AND TARGET freetype)
+  target_link_libraries(harfbuzz PUBLIC freetype)
 endif ()
 
 
