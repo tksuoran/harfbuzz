@@ -179,23 +179,26 @@ set (project_headers ${HB_BASE_headers})
 set (subset_project_headers ${HB_SUBSET_headers})
 
 ## Find and include needed header folders and libraries
-if (HB_HAVE_FREETYPE AND NOT TARGET freetype)
-  include (FindFreetype)
-  if (NOT FREETYPE_FOUND)
-    message(FATAL_ERROR "HB_HAVE_FREETYPE was set, but we failed to find it. Maybe add a CMAKE_PREFIX_PATH= to your Freetype2 install prefix")
-  endif ()
-
-  list(APPEND THIRD_PARTY_LIBS ${FREETYPE_LIBRARIES})
-  include_directories(AFTER ${FREETYPE_INCLUDE_DIRS})
+if (HB_HAVE_FREETYPE)
   add_definitions(-DHAVE_FREETYPE=1)
-
   list(APPEND project_headers ${PROJECT_SOURCE_DIR}/src/hb-ft.h)
+  if (TARGET freetype)
+    list(APPEND THIRD_PARTY_LIBS freetype)
+  else ()
+    include (FindFreetype)
+    if (NOT FREETYPE_FOUND)
+      message(FATAL_ERROR "HB_HAVE_FREETYPE was set, but we failed to find it. Maybe add a CMAKE_PREFIX_PATH= to your Freetype2 install prefix")
+    endif ()
 
-  # So check_funcs can find its headers
-  set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${FREETYPE_INCLUDE_DIRS})
-  set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${FREETYPE_LIBRARIES})
+    list(APPEND THIRD_PARTY_LIBS ${FREETYPE_LIBRARIES})
+    include_directories(AFTER ${FREETYPE_INCLUDE_DIRS})
 
-  check_funcs(FT_Get_Var_Blend_Coordinates FT_Set_Var_Blend_Coordinates FT_Done_MM_Var)
+    # So check_funcs can find its headers
+    set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${FREETYPE_INCLUDE_DIRS})
+    set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+    check_funcs(FT_Get_Var_Blend_Coordinates FT_Set_Var_Blend_Coordinates FT_Done_MM_Var)
+  endif ()
 endif ()
 
 if (HB_HAVE_GRAPHITE2)
@@ -447,10 +450,6 @@ target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
 target_include_directories(harfbuzz PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/harfbuzz>")
-target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
-if (HB_HAVE_FREETYPE AND TARGET freetype)
-  target_link_libraries(harfbuzz PUBLIC freetype)
-endif ()
 
 
 ## Define harfbuzz-icu library
