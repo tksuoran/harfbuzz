@@ -179,7 +179,7 @@ set (project_headers ${HB_BASE_headers})
 set (subset_project_headers ${HB_SUBSET_headers})
 
 ## Find and include needed header folders and libraries
-if (HB_HAVE_FREETYPE AND NOT TARGET Freetype::Freetype)
+if (HB_HAVE_FREETYPE AND NOT TARGET freetype)
   include (FindFreetype)
   if (NOT FREETYPE_FOUND)
     message(FATAL_ERROR "HB_HAVE_FREETYPE was set, but we failed to find it. Maybe add a CMAKE_PREFIX_PATH= to your Freetype2 install prefix")
