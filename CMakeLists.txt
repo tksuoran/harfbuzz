@@ -37,6 +37,9 @@ option(HB_HAVE_FREETYPE "Enable freetype interop helpers" OFF)
 option(HB_HAVE_GRAPHITE2 "Enable Graphite2 complementary shaper" OFF)
 option(HB_HAVE_GLIB "Enable glib unicode functions" OFF)
 option(HB_HAVE_ICU "Enable icu unicode functions" OFF)
+if (TARGET Freetype::Freetype)
+  set (HB_HAVE_FREETYPE ON)
+endif ()
 if (APPLE)
   option(HB_HAVE_CORETEXT "Enable CoreText shaper backend on macOS" ON)
   set (CMAKE_MACOSX_RPATH ON)
@@ -176,7 +179,7 @@ set (project_headers ${HB_BASE_headers})
 set (subset_project_headers ${HB_SUBSET_headers})
 
 ## Find and include needed header folders and libraries
-if (HB_HAVE_FREETYPE)
+if (HB_HAVE_FREETYPE AND NOT TARGET Freetype::Freetype)
   include (FindFreetype)
   if (NOT FREETYPE_FOUND)
     message(FATAL_ERROR "HB_HAVE_FREETYPE was set, but we failed to find it. Maybe add a CMAKE_PREFIX_PATH= to your Freetype2 install prefix")
@@ -444,6 +447,11 @@ target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
 target_include_directories(harfbuzz PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/harfbuzz>")
+target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
+if (HB_HAVE_FREETYPE AND TARGET Freetype::Freetype)
+  target_link_libraries(harfbuzz PUBLIC Freetype::Freetype)
+endif ()
+
 
 ## Define harfbuzz-icu library
 if (HB_HAVE_ICU)
