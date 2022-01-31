@@ -421,12 +421,12 @@ endif ()
 
 ## Define harfbuzz library
 add_library(harfbuzz ${project_sources} ${project_extra_sources} ${project_headers})
-target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
+target_link_libraries(harfbuzz PRIVATE ${THIRD_PARTY_LIBS})
 target_include_directories(harfbuzz PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/harfbuzz>")
 if (HB_HAVE_FREETYPE AND TARGET freetype)
-  target_link_libraries(harfbuzz PUBLIC freetype)
+  target_link_libraries(harfbuzz PRIVATE freetype)
 endif ()
 
 
